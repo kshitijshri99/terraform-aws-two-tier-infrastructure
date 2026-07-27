@@ -185,6 +185,16 @@ After the backend resources are created, the main Terraform configuration uses t
 - Infrastructure as Code
 - Troubleshooting AWS deployments
 
+## Cost Notice
+
+This project provisions billable AWS resources.
+
+Run
+
+terraform destroy
+
+after testing to avoid unnecessary AWS charges.
+
 ## 🚀 Future Enhancements
 
 - HTTPS with ACM
