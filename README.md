@@ -34,6 +34,49 @@ This project provisions a production-inspired **AWS Two-Tier Architecture** usin
 - IAM Role & Instance Profile
 - S3 Remote Backend
 - DynamoDB State Locking
+- Separate Bootstrap module for provisioning Terraform Remote Backend (Amazon S3 + DynamoDB)
+
+## Deployment Workflow
+
+The infrastructure deployment follows two stages:
+
+### Stage 1 – Bootstrap Backend
+
+Navigate to the `bootstrap/` directory and create the Terraform backend resources.
+
+```bash
+cd bootstrap
+terraform init
+terraform apply
+```
+
+This provisions:
+
+- Amazon S3 Bucket (Terraform Remote State)
+- Amazon DynamoDB Table (Terraform State Locking)
+
+### Stage 2 – Deploy Main Infrastructure
+
+Return to the project root and deploy the application infrastructure.
+
+```bash
+cd ..
+terraform init
+terraform apply
+```
+
+This provisions:
+
+- VPC
+- Public and Private Subnets
+- Internet Gateway
+- NAT Gateways
+- Security Groups
+- IAM Role
+- EC2 Launch Template
+- Auto Scaling Group
+- Application Load Balancer
+- Amazon RDS MySQL
 
 ## 🌐 Network Layout
 
