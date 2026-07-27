@@ -112,6 +112,19 @@ terraform apply
 ## IAM Roles
 ![](images/iam-roles.png)
 
+## Bootstrap Module
+
+The `bootstrap/` directory contains a separate Terraform configuration used to provision the remote backend infrastructure required by the main project.
+
+It creates:
+
+- Amazon S3 Bucket for storing the Terraform remote state
+- Amazon DynamoDB Table for Terraform state locking
+
+This bootstrap configuration is executed only once before deploying the main infrastructure.
+
+After the backend resources are created, the main Terraform configuration uses them for remote state management.
+
 ## S3 Remote Backend
 ![](images/s3-bucket.png)
 
