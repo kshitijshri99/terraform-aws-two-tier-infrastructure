@@ -191,7 +191,9 @@ This project provisions billable AWS resources.
 
 Run
 
+```bash
 terraform destroy
+```
 
 after testing to avoid unnecessary AWS charges.
 
