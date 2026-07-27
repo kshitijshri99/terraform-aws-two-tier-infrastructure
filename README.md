@@ -36,7 +36,19 @@ This project provisions a production-inspired **AWS Two-Tier Architecture** usin
 - DynamoDB State Locking
 - Separate Bootstrap module for provisioning Terraform Remote Backend (Amazon S3 + DynamoDB)
 
-## Deployment Workflow
+## 🌐 Network Layout
+
+| Resource | CIDR |
+|----------|------|
+| VPC | 10.0.0.0/16 |
+| Public A | 10.0.1.0/24 |
+| Public B | 10.0.2.0/24 |
+| Private Web A | 10.0.11.0/24 |
+| Private Web B | 10.0.12.0/24 |
+| Private DB A | 10.0.21.0/24 |
+| Private DB B | 10.0.22.0/24 |
+
+## 🚀 Deployment
 
 The infrastructure deployment follows two stages:
 
@@ -78,26 +90,6 @@ This provisions:
 - Application Load Balancer
 - Amazon RDS MySQL
 
-## 🌐 Network Layout
-
-| Resource | CIDR |
-|----------|------|
-| VPC | 10.0.0.0/16 |
-| Public A | 10.0.1.0/24 |
-| Public B | 10.0.2.0/24 |
-| Private Web A | 10.0.11.0/24 |
-| Private Web B | 10.0.12.0/24 |
-| Private DB A | 10.0.21.0/24 |
-| Private DB B | 10.0.22.0/24 |
-
-## 🚀 Deployment
-
-```bash
-terraform init
-terraform validate
-terraform plan
-terraform apply
-```
 
 ## 📊 Terraform Apply
 
