@@ -21,6 +21,21 @@ This project provisions a production-inspired **AWS Two-Tier Architecture** usin
 <img src="images/architecture-diagram.png" width="100%">
 </p>
 
+## Why this Project?
+
+This project demonstrates production-style Infrastructure as Code on AWS using Terraform.
+
+It provisions a highly available two-tier architecture consisting of:
+
+- Custom VPC
+- Public and Private Subnets
+- NAT Gateways
+- Internet Gateway
+- Application Load Balancer
+- Auto Scaling Group
+- Amazon RDS MySQL
+- Remote Terraform Backend
+
 ## ✨ Features
 
 - Modular Terraform project
