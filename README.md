@@ -31,7 +31,7 @@ This project provisions a production-inspired **AWS Two-Tier Architecture** usin
 - Launch Template
 - Auto Scaling Group
 - Amazon RDS MySQL
-- IAM Role & Instance Profile
+- IAM Role & Instance Profile (with SSM access, no SSH key required)
 - S3 Remote Backend
 - DynamoDB State Locking
 - Separate Bootstrap module for provisioning Terraform Remote Backend (Amazon S3 + DynamoDB)
@@ -48,13 +48,25 @@ This project provisions a production-inspired **AWS Two-Tier Architecture** usin
 | Private DB A | 10.0.21.0/24 |
 | Private DB B | 10.0.22.0/24 |
 
+## ✅ Prerequisites
+
+Before deploying, make sure you have:
+
+- An **AWS account** with permissions to create VPC, EC2, ALB, Auto Scaling, RDS, IAM, S3, and DynamoDB resources
+- **AWS CLI** installed and configured (`aws configure`) with valid credentials
+- **Terraform** `>= 1.5` installed locally
+- A globally unique name in mind for your own S3 state bucket (see [Stage 1](#stage-1--bootstrap-backend) below — this repo's default bucket name belongs to the original author and will not work for you)
+
 ## 🚀 Deployment
 
-The infrastructure deployment follows two stages:
+The infrastructure deployment follows two stages.
 
 ### Stage 1 – Bootstrap Backend
 
-Navigate to the `bootstrap/` directory and create the Terraform backend resources.
+The `bootstrap/` module provisions the S3 bucket and DynamoDB table used for Terraform's remote state. Its default bucket name (`kshitij-shrivastava-terraform-state-2026`) belongs to the original author — **S3 bucket names are globally unique, so you must change it** before applying.
+
+1. Open `bootstrap/variables.tf` and change the `bucket_name` default (or pass your own with `-var`) to something unique, e.g. `your-name-terraform-state-<year>`.
+2. Provision the backend:
 
 ```bash
 cd bootstrap
@@ -69,10 +81,19 @@ This provisions:
 
 ### Stage 2 – Deploy Main Infrastructure
 
-Return to the project root and deploy the application infrastructure.
+1. Update the root `backend.tf` so `bucket` and `dynamodb_table` match exactly what you created in Stage 1 (Terraform backend blocks can't reference variables, so these values must be hardcoded here).
+2. Copy the example variables file and fill in your own values:
 
 ```bash
 cd ..
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Edit `terraform.tfvars` and set your `db_password` and any other values you want to change. **Do not commit this file** — it's already excluded via `.gitignore`.
+
+3. Deploy:
+
+```bash
 terraform init
 terraform apply
 ```
@@ -90,6 +111,15 @@ This provisions:
 - Application Load Balancer
 - Amazon RDS MySQL
 
+## 🔑 Accessing the EC2 Instances
+
+Web instances run in **private subnets** and have no SSH key pair attached. Access is instead via **AWS Systems Manager Session Manager**, enabled through the IAM instance profile (`AmazonSSMManagedInstanceCore`):
+
+```bash
+aws ssm start-session --target <instance-id>
+```
+
+You can find the instance IDs in the EC2 console or via the `aws ec2 describe-instances` CLI command.
 
 ## 📊 Terraform Apply
 
@@ -172,6 +202,7 @@ After the backend resources are created, the main Terraform configuration uses t
 - Private subnets for application and database tiers
 - Security Groups implementing least privilege
 - Remote Terraform state with state locking
+- Instance access via SSM Session Manager instead of SSH key pairs
 
 ## 📚 Skills Demonstrated
 
@@ -185,17 +216,26 @@ After the backend resources are created, the main Terraform configuration uses t
 - Infrastructure as Code
 - Troubleshooting AWS deployments
 
-## Cost Notice
+## 💰 Cost Notice
 
-This project provisions billable AWS resources.
+This project provisions **billable AWS resources**, including two NAT Gateways, an Application Load Balancer, and an RDS instance — all of which incur hourly charges even when idle.
 
-Run
+When you're done testing, tear down in this order:
 
-```bash
-terraform destroy
-```
+1. Destroy the main infrastructure:
 
-after testing to avoid unnecessary AWS charges.
+   ```bash
+   terraform destroy
+   ```
+
+2. Then destroy the bootstrap backend:
+
+   ```bash
+   cd bootstrap
+   terraform destroy
+   ```
+
+   Note: the S3 state bucket has versioning enabled, so `terraform destroy` will fail if it isn't empty. Empty the bucket (including all object versions) first, e.g. via the S3 console or `aws s3 rm s3://<bucket-name> --recursive`.
 
 ## 🚀 Future Enhancements
 
