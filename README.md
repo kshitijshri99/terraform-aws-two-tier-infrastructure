@@ -256,3 +256,12 @@ When you're done testing, tear down in this order:
 ## 📄 License
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+
+<div align="center">
+
+### ⭐ If you found this project helpful, please consider giving it a star!
+
+Made with ❤️ by **Kshitij Shrivastava**
+
+</div>
